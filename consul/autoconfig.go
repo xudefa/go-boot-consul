@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"time"
 
-	consulcore "github.com/xudefa/go-boot-consul"
-
 	"github.com/xudefa/go-boot/boot"
 	"github.com/xudefa/go-boot/condition"
 	"github.com/xudefa/go-boot/config"
@@ -29,7 +27,7 @@ func init() {
 
 // consulConfigCenterFactory Consul 配置中心工厂函数
 func consulConfigCenterFactory(ctx context.Context, cfg *config.ConfigCenterConfig) (config.ConfigCenter, error) {
-	return consulcore.NewConsulConfigCenter(cfg)
+	return NewConsulConfigCenter(cfg)
 }
 
 // ConsulAutoConfiguration Consul 注册中心的自动配置。
@@ -50,7 +48,7 @@ func (c *ConsulAutoConfiguration) Configure(ctx boot.ApplicationContext) error {
 			Timeout:   5 * time.Second,
 			Prefix:    env.GetString("consul.config-center.prefix", "config"),
 		}
-		center, err := consulcore.NewConsulConfigCenter(cfg)
+		center, err := NewConsulConfigCenter(cfg)
 		if err != nil {
 			return fmt.Errorf("create consul config center failed: %w", err)
 		}
@@ -59,10 +57,10 @@ func (c *ConsulAutoConfiguration) Configure(ctx boot.ApplicationContext) error {
 		}
 	}
 
-	reg, err := consulcore.NewConsulRegistry(
-		consulcore.WithAddress(env.GetString("consul.address", "localhost:8500")),
-		consulcore.WithDatacenter(env.GetString("consul.datacenter", "")),
-		consulcore.WithContainer(ctx.Container()),
+	reg, err := NewConsulRegistry(
+		WithAddress(env.GetString("consul.address", "localhost:8500")),
+		WithDatacenter(env.GetString("consul.datacenter", "")),
+		WithContainer(ctx.Container()),
 	)
 	if err != nil {
 		return err
